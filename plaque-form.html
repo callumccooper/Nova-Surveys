@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Gallery - Plaque Submission</title>
+    <title>Nova Gallery Plaque Form</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -33,15 +33,15 @@
             justify-content: space-between;
             margin-bottom: 25px;
             background: #ffffff;
+            position: relative;
         }
 
-        /* Fluid Inline Fields Layout */
+        /* Dynamic Inline Layout */
         .inline-field-group {
             display: flex;
             flex-wrap: wrap;
             align-items: baseline;
             font-size: 13px;
-            margin-bottom: 6px;
         }
         .plaque-header {
             font-weight: bold;
@@ -79,7 +79,7 @@
             color: #000000;
             box-sizing: border-box;
             resize: none;
-            height: 110px;
+            height: 100px;
             line-height: 1.4;
         }
 
@@ -87,7 +87,7 @@
             font-size: 11px;
             color: #666;
             text-align: right;
-            margin-bottom: 8px;
+            margin-bottom: 15px;
         }
         .word-count.over-limit {
             color: #d93025;
@@ -99,7 +99,16 @@
             flex-wrap: wrap;
             align-items: baseline;
             font-size: 13px;
-            margin-top: 4px;
+            margin-top: 10px;
+        }
+
+        .meta-line-combined {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 12px;
+            font-size: 13px;
+            margin-top: 10px;
         }
 
         select {
@@ -112,6 +121,68 @@
             cursor: pointer;
             width: 100%;
             padding: 2px 0;
+        }
+
+        /* Physical Tag Representation (Bottom Right) */
+        .tag-control-wrapper {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auto-color-label {
+            font-size: 10px;
+            color: #666666;
+            text-align: right;
+            max-width: 110px;
+            line-height: 1.2;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .circle-tag {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid #000000;
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-size: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            line-height: 1.1;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .circle-tag input[type="color"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .circle-tag.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .circle-tag.disabled input[type="color"] {
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         input[type="submit"] {
@@ -134,7 +205,7 @@
             cursor: not-allowed;
         }
 
-        /* Hidden Mirror Element for calculating width */
+        /* Hidden Mirror Element for calculating dynamic input width */
         #text-measurer {
             position: absolute;
             top: -9999px;
@@ -148,12 +219,11 @@
 </head>
 <body>
 
-    <h2>Plaque Details Submission</h2>
+    <h2>Nova Gallery Plaque Form</h2>
     
     <form id="plaqueForm">
         <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
 
-        <!-- Hidden Span for Input Width Calculations -->
         <span id="text-measurer"></span>
 
         <!-- Square Plaque Layout Container -->
@@ -173,32 +243,47 @@
             </div>
 
             <!-- Bottom Section: Technical Details & Meta -->
-            <div>
+            <div style="padding-right: 180px;"> <!-- Margin ensures text doesn't overlap tag controls -->
+                
+                <!-- Audio Field -->
                 <div class="meta-line">
                     <span>Audio:&nbsp;</span>
                     <input type="text" name="Audio Track" class="auto-size" placeholder="Song / Audio Track (optional)" style="flex-grow: 1;">
                 </div>
 
-                <div class="meta-line">
-                    <input type="text" name="Medium & Materials" class="auto-size" placeholder="Medium (e.g., Oil on canvas)" style="width: 100%;" required>
+                <!-- Material AND Dimension (Joined) -->
+                <div class="meta-line-combined">
+                    <input type="text" name="Medium & Materials" class="auto-size" placeholder="Medium (e.g., Oil on canvas)" style="flex: 1; min-width: 140px;" required>
+                    <input type="text" name="Dimensions" class="auto-size" placeholder="Dimensions (e.g., 61.5 x 61 cm)" style="flex: 1; min-width: 120px;" required>
                 </div>
 
-                <div class="meta-line">
-                    <input type="text" name="Dimensions" class="auto-size" placeholder="Dimensions (e.g., 61.5 x 61 cm)" style="width: 100%;" required>
-                </div>
-
+                <!-- Date/Year Field -->
                 <div class="meta-line">
                     <span>(</span>
                     <input type="text" name="Year" class="auto-size" placeholder="2026" required>
                     <span>)</span>
                 </div>
 
-                <div class="meta-line" style="margin-top: 8px;">
+                <!-- For Sale Option -->
+                <div class="meta-line" style="margin-top: 10px;">
                     <select name="For Sale" required>
                         <option value="" disabled selected>For sale?</option>
                         <option value="Available for sale">Available for sale</option>
                         <option value="NFS (Not for sale)">NFS (Not for sale)</option>
                     </select>
+                </div>
+            </div>
+
+            <!-- Bottom-Right NFC Circle Representation & Color Selection -->
+            <div class="tag-control-wrapper">
+                <label class="auto-color-label" for="autoColorCheck">
+                    Auto-select dominant color from artwork
+                </label>
+                <input type="checkbox" id="autoColorCheck" name="Auto Select Dominant Color" value="Yes" style="cursor: pointer;">
+                
+                <div class="circle-tag" id="colorCircle" title="Click to pick tag color">
+                    TAP<br>HERE
+                    <input type="color" id="tagColor" name="Tag Chosen Color" value="#ffffff">
                 </div>
             </div>
 
@@ -213,7 +298,45 @@
     const descInput = document.getElementById('descInput');
     const wordCountDisplay = document.getElementById('wordCountDisplay');
     const measurer = document.getElementById('text-measurer');
+    
+    const tagColorInput = document.getElementById('tagColor');
+    const colorCircle = document.getElementById('colorCircle');
+    const autoColorCheck = document.getElementById('autoColorCheck');
+
     const MAX_WORDS = 100;
+
+    // Handle Color Picker dynamic update
+    tagColorInput.addEventListener('input', (e) => {
+        if (autoColorCheck.checked) return;
+        
+        const hex = e.target.value;
+        colorCircle.style.backgroundColor = hex;
+        
+        // Calculate contrast to switch text black/white automatically
+        const r = parseInt(hex.substr(1,2),16);
+        const g = parseInt(hex.substr(3,2),16);
+        const b = parseInt(hex.substr(5,2),16);
+        const yiq = ((r*299)+(g*587)+(b*114))/1000;
+        
+        colorCircle.style.color = (yiq >= 128) ? '#000000' : '#ffffff';
+        colorCircle.style.borderColor = (yiq >= 200) ? '#000000' : hex;
+    });
+
+    // Handle Opt-Out Checkbox Toggle
+    autoColorCheck.addEventListener('change', () => {
+        if (autoColorCheck.checked) {
+            colorCircle.classList.add('disabled');
+            colorCircle.style.backgroundColor = 'transparent';
+            colorCircle.style.color = '#000000';
+            colorCircle.style.borderColor = '#000000';
+            tagColorInput.disabled = true;
+        } else {
+            colorCircle.classList.remove('disabled');
+            tagColorInput.disabled = false;
+            // Trigger input change to re-apply color if un-checked
+            tagColorInput.dispatchEvent(new Event('input'));
+        }
+    });
 
     // Auto-resize inputs as user types
     function resizeInput(input) {
@@ -224,18 +347,13 @@
         const text = input.value || input.placeholder || '';
         measurer.textContent = text;
         
-        // Match exact text width + small buffer
         const width = measurer.getBoundingClientRect().width + 4;
         input.style.width = `${Math.max(width, 20)}px`;
     }
 
-    // Attach resize listener to all dynamic inputs
     document.querySelectorAll('input.auto-size').forEach(input => {
-        // Skip fixed 100% full width inputs from auto-resizing
         if (input.style.width === '100%') return;
-
         input.addEventListener('input', () => resizeInput(input));
-        // Initialize width on load
         resizeInput(input);
     });
 
@@ -253,7 +371,7 @@
         }
     });
 
-    // Submit handler
+    // Form Submission Handler
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
