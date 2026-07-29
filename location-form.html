@@ -132,6 +132,8 @@
     
     <form id="galleryForm">
         <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
+        <input type="hidden" name="from_name" value="Nova Location Survey">
+        <input type="hidden" name="subject" id="emailSubject" value="[LOCATION FORM] New Submission">
 
         <!-- Artist Name -->
         <label for="artist_name">Artist Name</label>
@@ -317,6 +319,11 @@
                 }
             }
         }
+
+        // Set Dynamic Subject Line
+        const artistName = document.getElementById('artist_name').value.trim();
+        const subjectInput = document.getElementById('emailSubject');
+        subjectInput.value = `[LOCATION FORM] Submission from ${artistName || 'Unknown Artist'}`;
 
         submitBtn.value = "Sending...";
         submitBtn.disabled = true;
