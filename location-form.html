@@ -33,7 +33,7 @@
             margin-top: 20px;
             margin-bottom: 5px;
         }
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], textarea {
             font-family: inherit;
             font-size: 14px;
             width: 100%;
@@ -44,6 +44,10 @@
             border-radius: 0;
             outline: none;
             box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 40px;
         }
         p {
             margin: 5px 0 15px 0;
@@ -179,6 +183,10 @@
             <div id="apart_regions" style="display: none;"></div>
         </div>
 
+        <!-- Additional Notes / Anything Else Field -->
+        <label for="additional_notes" style="margin-top: 30px;">Anything else I need to know?</label>
+        <input type="text" id="additional_notes" name="Additional Notes" placeholder="Optional notes, special requirements, etc.">
+
         <input type="submit" id="submitBtn" value="Submit Preference">
     </form>
 
@@ -201,7 +209,7 @@
         const isSkipped = skipCheckbox.checked;
         detailedSection.style.display = isSkipped ? 'none' : 'block';
 
-        // Enable or disable ALL inputs inside detailedSection
+        // Enable or disable inputs inside detailedSection
         const detailedInputs = detailedSection.querySelectorAll('input, select');
         detailedInputs.forEach(input => {
             input.disabled = isSkipped;
