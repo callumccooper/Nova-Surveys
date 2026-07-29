@@ -229,7 +229,7 @@
     
     <form id="plaqueForm">
         <!-- Web3Forms Custom Metadata & Routing -->
-        <input type="hidden" name="access_key" value="db2bb683-6dff-4f76-a847-8e221ab93b33">
+        <input type="hidden" name="access_key" id="access_key" value="db2bb683-6dff-4f76-a847-8e221ab93b33">
         <input type="hidden" name="from_name" value="Nova Plaque Survey">
         <input type="hidden" name="subject" id="emailSubject" value="[PLAQUE FORM] New Submission">
 
@@ -416,16 +416,19 @@
 
         const formData = new FormData(form);
 
-        // Direct Route to Plaque Form ID Endpoint
-        fetch('https://api.web3forms.com/submit/db2bb683-6dff-4f76-a847-8e221ab93b33', {
+        // Ensure key is explicitly locked in FormData payload
+        formData.set('access_key', 'db2bb683-6dff-4f76-a847-8e221ab93b33');
+
+        fetch('https://api.web3forms.com/submit', {
             method: 'POST',
             body: formData
         })
-        .then(response => {
-            if (response.ok) {
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
                 window.location.href = "thanks.html";
             } else {
-                alert('Submission failed. Please try again.');
+                alert(`Submission failed: ${data.message || 'Please try again.'}`);
                 submitBtn.value = "Submit Plaque Info";
                 submitBtn.disabled = false;
             }
