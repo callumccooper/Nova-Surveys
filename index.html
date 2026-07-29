@@ -6,101 +6,113 @@
     <title>Nova Gallery - Artist Submission</title>
     <style>
         body {
-            font-family: "Courier New", Courier, monospace;
-            background-color: #0d0d0d;
-            color: #00ff66;
-            max-width: 650px;
-            margin: 30px auto;
-            padding: 20px;
-            line-height: 1.4;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+            font-size: 14px;
+            line-height: 1.5;
         }
-        h2, h3 {
-            color: #00ff66;
-            margin-top: 20px;
-            border-bottom: 1px dashed #00ff66;
-            padding-bottom: 4px;
+        h2 {
+            font-size: 16px;
+            font-weight: normal;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        h3 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 10px;
         }
         label {
             display: block;
-            margin-top: 15px;
+            margin-top: 20px;
+            margin-bottom: 5px;
         }
         input[type="text"] {
-            background-color: #000;
-            color: #00ff66;
-            border: 1px solid #00ff66;
             font-family: inherit;
-            font-size: 1rem;
+            font-size: 14px;
             width: 100%;
-            padding: 6px;
-            margin-top: 4px;
+            padding: 8px 0;
+            border: none;
+            border-bottom: 1px solid #000000;
+            background: transparent;
+            border-radius: 0;
+            outline: none;
             box-sizing: border-box;
         }
-        input[type="text"]:focus {
-            outline: none;
-            box-shadow: 0 0 5px #00ff66;
+        p {
+            margin: 5px 0 15px 0;
+            color: #555555;
         }
         .checkbox-group {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin: 15px 0;
-            padding: 10px;
-            border: 1px solid #00ff66;
+            gap: 12px;
+            margin: 20px 0;
         }
         .checkbox-group label {
-            margin-top: 0;
+            margin: 0;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         input[type="checkbox"] {
-            accent-color: #00ff66;
+            accent-color: #000000;
+            cursor: pointer;
         }
         .floorplan-img {
             max-width: 100%;
             height: auto;
-            border: 1px solid #00ff66;
-            margin-top: 10px;
+            display: block;
+            margin: 15px 0;
         }
         input[type="submit"] {
-            background-color: #00ff66;
-            color: #000;
             font-family: inherit;
-            font-weight: bold;
-            font-size: 1rem;
+            font-size: 14px;
+            background-color: #000000;
+            color: #ffffff;
             border: none;
-            padding: 10px 20px;
-            margin-top: 15px;
+            padding: 12px 20px;
+            margin-top: 30px;
             cursor: pointer;
             width: 100%;
+            border-radius: 0;
+            -webkit-appearance: none;
         }
         input[type="submit"]:hover {
-            background-color: #00cc52;
+            background-color: #333333;
         }
         input[type="submit"]:disabled {
-            background-color: #333333;
-            color: #666666;
+            background-color: #cccccc;
             cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
-    <h2>> Nova Gallery Location & Plaque Form</h2>
+    <h2>Nova Gallery — Location & Plaque Form</h2>
     
     <form id="galleryForm">
         <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
 
-        <label for="artist_name">> Artist Name:</label>
+        <label for="artist_name">Artist Name</label>
         <input type="text" id="artist_name" name="Artist Name" placeholder="Full name" required>
 
-        <label for="work_title">> Work Title:</label>
+        <label for="work_title">Work Title</label>
         <input type="text" id="work_title" name="Work Title" placeholder="Title of piece" required>
 
-        <h3>> Gallery Floor Plan</h3>
-        <p>Refer to the map below to choose your top locations:</p>
+        <h3>Gallery Floor Plan</h3>
+        <p>Refer to the map below to choose your top location preferences.</p>
         <img src="floorplan.png" alt="Gallery Floor Plan" class="floorplan-img">
 
-        <h3>> Preferred Locations</h3>
-        <p>[Select exactly 3 spots from the floor plan]</p>
+        <h3>Preferred Locations</h3>
+        <p>Select exactly 3 spots from the floor plan.</p>
 
         <div class="checkbox-group">
             <label><input type="checkbox" name="Preferred Locations" value="Spot 1" class="location-check"> Location 1</label>
@@ -117,7 +129,7 @@
             <label><input type="checkbox" name="Preferred Locations" value="Spot 12" class="location-check"> Location 12</label>
         </div>
 
-        <input type="submit" id="submitBtn" value="[ SUBMIT PREFERENCE ]">
+        <input type="submit" id="submitBtn" value="Submit Preference">
     </form>
 
 <script>
@@ -131,7 +143,7 @@
             const checkedCount = document.querySelectorAll('.location-check:checked').length;
             if (checkedCount > requiredSelection) {
                 checkbox.checked = false;
-                alert('ERROR: Maximum 3 locations allowed.');
+                alert('You can only select up to 3 locations.');
             }
         });
     });
@@ -141,11 +153,11 @@
         
         const checkedCount = document.querySelectorAll('.location-check:checked').length;
         if (checkedCount !== requiredSelection) {
-            alert('ERROR: Select exactly 3 locations before submitting.');
+            alert('Please select exactly 3 locations before submitting.');
             return;
         }
 
-        submitBtn.value = "[ SENDING DATA... ]";
+        submitBtn.value = "Sending...";
         submitBtn.disabled = true;
 
         const formData = new FormData(form);
@@ -158,14 +170,14 @@
             if (response.ok) {
                 window.location.href = "thanks.html";
             } else {
-                alert('ERROR: Submission failed.');
-                submitBtn.value = "[ SUBMIT PREFERENCE ]";
+                alert('Submission failed. Please try again.');
+                submitBtn.value = "Submit Preference";
                 submitBtn.disabled = false;
             }
         })
         .catch(error => {
-            alert('ERROR: Network issue.');
-            submitBtn.value = "[ SUBMIT PREFERENCE ]";
+            alert('Network error. Please try again.');
+            submitBtn.value = "Submit Preference";
             submitBtn.disabled = false;
         });
     });
