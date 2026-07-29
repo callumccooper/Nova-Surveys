@@ -1,66 +1,144 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Gallery Location & Plaque Submission</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Gallery - Artist Submission</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 650px;
+            margin: 30px auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        h2, h3 {
+            margin-top: 0;
+            color: #222;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 20px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+            background: #fafafa;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .checkbox-group label {
+            font-weight: normal;
+            cursor: pointer;
+        }
+        .floorplan-img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        input[type="submit"] {
+            background-color: #000;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+        }
+        input[type="submit"]:hover {
+            background-color: #333;
+        }
+    </style>
 </head>
 <body>
 
-<form action="https://api.web3forms.com/submit" method="POST" id="galleryForm">
-    <!-- Required Web3Forms Access Key -->
-    <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
-
-    <!-- Artist Info -->
-    <label for="artist_name">Name:</label><br>
-    <input type="text" id="artist_name" name="Artist Name" required><br><br>
-
-    <label for="work_title">Work Title:</label><br>
-    <input type="text" id="work_title" name="Work Title" required><br><br>
-
-    <!-- Gallery Floor Plan Display -->
-    <h3>Gallery Floor Plan</h3>
-    <p>Please review the numbered locations on the map below:</p>
-    <!-- Replace 'floorplan.png' with your actual image filename or URL -->
-    <img src="floorplan.png" alt="Gallery Floor Plan" style="max-width: 100%; height: auto; border: 1px solid #000;">
-    <br><br>
-
-    <!-- Location Selections (Exactly 3 required) -->
-    <h3>Preferred Locations (Select exactly 3 in order of preference)</h3>
+<div class="form-container">
+    <h2>Nova Gallery Location & Plaque Form</h2>
     
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 1" class="location-check"> Location 1</label><br>
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 2" class="location-check"> Location 2</label><br>
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 3" class="location-check"> Location 3</label><br>
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 4" class="location-check"> Location 4</label><br>
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 5" class="location-check"> Location 5</label><br>
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 6" class="location-check"> Location 6</label><br>
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 7" class="location-check"> Location 7</label><br>
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 8" class="location-check"> Location 8</label><br>
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 9" class="location-check"> Location 9</label><br>
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 10" class="location-check"> Location 10</label><br>
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 11" class="location-check"> Location 11</label><br>
-    <label><input type="checkbox" name="Preferred Locations" value="Spot 12" class="location-check"> Location 12</label><br><br>
+    <form action="https://api.web3forms.com/submit" method="POST" id="galleryForm">
+        <!-- Web3Forms Access Key -->
+        <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
+        
+        <!-- Redirect to custom thank-you page -->
+        <input type="hidden" name="redirect" value="https://callumcooper.github.io/Nova-Surveys/thanks.html">
 
-    <input type="submit" value="Send Submission">
-</form>
+        <!-- Artist Details -->
+        <label for="artist_name">Artist Name</label>
+        <input type="text" id="artist_name" name="Artist Name" placeholder="Your full name" required>
+
+        <label for="work_title">Work Title</label>
+        <input type="text" id="work_title" name="Work Title" placeholder="Title of your piece" required>
+
+        <!-- Gallery Map -->
+        <h3>Gallery Floor Plan</h3>
+        <p>Refer to the map below to choose your top location preferences:</p>
+        
+        <!-- Update the src attribute if your image has a different name or file extension -->
+        <img src="floorplan.png" alt="Gallery Floor Plan" class="floorplan-img">
+
+        <!-- Location Selections -->
+        <h3>Preferred Locations</h3>
+        <p><em>Select exactly 3 preferred spots from the floor plan:</em></p>
+
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 1" class="location-check"> Location 1</label>
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 2" class="location-check"> Location 2</label>
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 3" class="location-check"> Location 3</label>
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 4" class="location-check"> Location 4</label>
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 5" class="location-check"> Location 5</label>
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 6" class="location-check"> Location 6</label>
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 7" class="location-check"> Location 7</label>
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 8" class="location-check"> Location 8</label>
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 9" class="location-check"> Location 9</label>
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 10" class="location-check"> Location 10</label>
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 11" class="location-check"> Location 11</label>
+            <label><input type="checkbox" name="Preferred Locations" value="Spot 12" class="location-check"> Location 12</label>
+        </div>
+
+        <input type="submit" value="Submit Preference">
+    </form>
+</div>
 
 <script>
     const checkboxes = document.querySelectorAll('.location-check');
-    const maxAllowed = 3;
+    const requiredSelection = 3;
 
-    // 1. Enforce maximum of 3 checkmarks on click
+    // Prevents selecting more than 3 boxes dynamically
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             const checkedCount = document.querySelectorAll('.location-check:checked').length;
-            if (checkedCount > maxAllowed) {
+            if (checkedCount > requiredSelection) {
                 checkbox.checked = false;
                 alert('You can only select up to 3 preferred locations.');
             }
         });
     });
 
-    // 2. Ensure they selected EXACTLY 3 before submitting
+    // Validates that EXACTLY 3 are selected on submit
     document.getElementById('galleryForm').addEventListener('submit', function(e) {
         const checkedCount = document.querySelectorAll('.location-check:checked').length;
-        if (checkedCount < maxAllowed) {
+        if (checkedCount !== requiredSelection) {
             e.preventDefault();
             alert('Please select exactly 3 locations before submitting.');
         }
