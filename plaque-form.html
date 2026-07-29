@@ -34,18 +34,41 @@
             margin-bottom: 25px;
             background: #ffffff;
         }
-        .plaque-header {
+
+        /* Fluid Inline Fields Layout */
+        .inline-field-group {
             display: flex;
-            gap: 8px;
-            align-items: center;
+            flex-wrap: wrap;
+            align-items: baseline;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .plaque-header {
             font-weight: bold;
             font-size: 14px;
             margin-bottom: 12px;
         }
-        .plaque-header input {
-            font-weight: bold;
+
+        /* Auto-sizing Input Styling */
+        input.auto-size {
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            border: none;
+            background: transparent;
+            outline: none;
+            padding: 0;
+            margin: 0;
+            color: #000000;
+            min-width: 20px;
+            width: auto;
         }
-        input[type="text"], textarea, select {
+
+        input[type="text"]::placeholder, textarea::placeholder {
+            color: #888888;
+        }
+
+        textarea {
             font-family: inherit;
             font-size: 13px;
             width: 100%;
@@ -55,29 +78,42 @@
             padding: 2px 0;
             color: #000000;
             box-sizing: border-box;
-        }
-        input[type="text"]::placeholder, textarea::placeholder {
-            color: #888888;
-        }
-        textarea {
             resize: none;
-            height: 120px;
+            height: 110px;
             line-height: 1.4;
         }
+
+        .word-count {
+            font-size: 11px;
+            color: #666;
+            text-align: right;
+            margin-bottom: 8px;
+        }
+        .word-count.over-limit {
+            color: #d93025;
+            font-weight: bold;
+        }
+
         .meta-line {
             display: flex;
-            align-items: center;
-            gap: 6px;
+            flex-wrap: wrap;
+            align-items: baseline;
             font-size: 13px;
             margin-top: 4px;
         }
-        .meta-line label {
-            white-space: nowrap;
-        }
+
         select {
-            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            border: none;
             border-bottom: 1px solid #eee;
+            background: transparent;
+            outline: none;
+            cursor: pointer;
+            width: 100%;
+            padding: 2px 0;
         }
+
         input[type="submit"] {
             font-family: inherit;
             font-size: 14px;
@@ -97,6 +133,17 @@
             background-color: #cccccc;
             cursor: not-allowed;
         }
+
+        /* Hidden Mirror Element for calculating width */
+        #text-measurer {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+            visibility: hidden;
+            white-space: pre;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
@@ -106,40 +153,44 @@
     <form id="plaqueForm">
         <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
 
+        <!-- Hidden Span for Input Width Calculations -->
+        <span id="text-measurer"></span>
+
         <!-- Square Plaque Layout Container -->
         <div class="plaque-box">
             
             <!-- Top Section: Piece Title & Artist Name -->
             <div>
-                <div class="plaque-header">
-                    <input type="text" name="Piece Title" placeholder="Piece Title" required>
-                    <span>,</span>
-                    <input type="text" name="Artist Name" placeholder="Artist Name" required>
+                <div class="inline-field-group plaque-header">
+                    <input type="text" name="Piece Title" class="auto-size" placeholder="Piece Title" required>
+                    <span>,&nbsp;</span>
+                    <input type="text" name="Artist Name" class="auto-size" placeholder="Artist Name" required>
                 </div>
 
-                <!-- Description Paragraph -->
-                <textarea name="Description" placeholder="Description / Artist statement..." required></textarea>
+                <!-- Description Paragraph with Word Counter -->
+                <textarea id="descInput" name="Description" placeholder="Description..." required></textarea>
+                <div id="wordCountDisplay" class="word-count">0 / 100 words</div>
             </div>
 
             <!-- Bottom Section: Technical Details & Meta -->
             <div>
                 <div class="meta-line">
-                    <label>Audio:</label>
-                    <input type="text" name="Audio Track" placeholder="Song / Audio Track (optional)">
+                    <span>Audio:&nbsp;</span>
+                    <input type="text" name="Audio Track" class="auto-size" placeholder="Song / Audio Track (optional)" style="flex-grow: 1;">
                 </div>
 
                 <div class="meta-line">
-                    <input type="text" name="Medium & Materials" placeholder="Medium (e.g., Oil on canvas)" required>
+                    <input type="text" name="Medium & Materials" class="auto-size" placeholder="Medium (e.g., Oil on canvas)" style="width: 100%;" required>
                 </div>
 
                 <div class="meta-line">
-                    <input type="text" name="Dimensions" placeholder="Dimensions (e.g., 61.5 x 61 cm)" required>
+                    <input type="text" name="Dimensions" class="auto-size" placeholder="Dimensions (e.g., 61.5 x 61 cm)" style="width: 100%;" required>
                 </div>
 
                 <div class="meta-line">
-                    <label>(</label>
-                    <input type="text" name="Year" placeholder="2026" style="width: 50px;" required>
-                    <label>)</label>
+                    <span>(</span>
+                    <input type="text" name="Year" class="auto-size" placeholder="2026" required>
+                    <span>)</span>
                 </div>
 
                 <div class="meta-line" style="margin-top: 8px;">
@@ -147,7 +198,6 @@
                         <option value="" disabled selected>For sale?</option>
                         <option value="Available for sale">Available for sale</option>
                         <option value="NFS (Not for sale)">NFS (Not for sale)</option>
-                        <option value="POR (Price on request)">POR (Price on request)</option>
                     </select>
                 </div>
             </div>
@@ -160,9 +210,60 @@
 <script>
     const form = document.getElementById('plaqueForm');
     const submitBtn = document.getElementById('submitBtn');
+    const descInput = document.getElementById('descInput');
+    const wordCountDisplay = document.getElementById('wordCountDisplay');
+    const measurer = document.getElementById('text-measurer');
+    const MAX_WORDS = 100;
 
+    // Auto-resize inputs as user types
+    function resizeInput(input) {
+        const style = window.getComputedStyle(input);
+        measurer.style.fontSize = style.fontSize;
+        measurer.style.fontWeight = style.fontWeight;
+        
+        const text = input.value || input.placeholder || '';
+        measurer.textContent = text;
+        
+        // Match exact text width + small buffer
+        const width = measurer.getBoundingClientRect().width + 4;
+        input.style.width = `${Math.max(width, 20)}px`;
+    }
+
+    // Attach resize listener to all dynamic inputs
+    document.querySelectorAll('input.auto-size').forEach(input => {
+        // Skip fixed 100% full width inputs from auto-resizing
+        if (input.style.width === '100%') return;
+
+        input.addEventListener('input', () => resizeInput(input));
+        // Initialize width on load
+        resizeInput(input);
+    });
+
+    // Real-time word counter logic
+    descInput.addEventListener('input', () => {
+        const text = descInput.value.trim();
+        const wordCount = text === '' ? 0 : text.split(/\s+/).length;
+        
+        wordCountDisplay.textContent = `${wordCount} / ${MAX_WORDS} words`;
+
+        if (wordCount > MAX_WORDS) {
+            wordCountDisplay.classList.add('over-limit');
+        } else {
+            wordCountDisplay.classList.remove('over-limit');
+        }
+    });
+
+    // Submit handler
     form.addEventListener('submit', function(e) {
         e.preventDefault();
+
+        const text = descInput.value.trim();
+        const wordCount = text === '' ? 0 : text.split(/\s+/).length;
+
+        if (wordCount > MAX_WORDS) {
+            alert(`Please shorten your description to ${MAX_WORDS} words or fewer. You are currently at ${wordCount} words.`);
+            return;
+        }
 
         submitBtn.value = "Sending...";
         submitBtn.disabled = true;
