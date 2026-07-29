@@ -228,10 +228,10 @@
     <h2>Nova Gallery - Plaque Form</h2>
     
     <form id="plaqueForm">
-        <!-- Dedicated Plaque Access Key & Dynamic Subject Routing -->
+        <!-- Web3Forms Custom Metadata & Routing -->
         <input type="hidden" name="access_key" value="db2bb683-6dff-4f76-a847-8e221ab93b33">
         <input type="hidden" name="from_name" value="Nova Plaque Survey">
-        <input type="hidden" name="subject" id="emailSubject" value="[PLAQUE FORM] New Plaque Submission">
+        <input type="hidden" name="subject" id="emailSubject" value="[PLAQUE FORM] New Submission">
 
         <span id="text-measurer"></span>
 
@@ -416,7 +416,8 @@
 
         const formData = new FormData(form);
 
-        fetch('https://api.web3forms.com/submit', {
+        // Direct Route to Plaque Form ID Endpoint
+        fetch('https://api.web3forms.com/submit/db2bb683-6dff-4f76-a847-8e221ab93b33', {
             method: 'POST',
             body: formData
         })
