@@ -78,6 +78,20 @@
             display: block;
             margin: 15px 0;
         }
+        .virtual-tour-prompt {
+            margin-top: 25px;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #000000;
+        }
+        .virtual-tour-link {
+            color: #000000;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        .virtual-tour-link:hover {
+            color: #555555;
+        }
         input[type="submit"] {
             font-family: inherit;
             font-size: 14px;
@@ -149,7 +163,11 @@
                 </label>
             </div>
 
-            <!-- Floor Plan & Regions -->
+            <!-- Virtual Tour Link & Floor Plan -->
+            <p class="virtual-tour-prompt">
+                Want to explore before deciding? You can <a href="https://callumccooper.github.io/NovaVirtualGallery/" target="_blank" rel="noopener noreferrer" class="virtual-tour-link">walk virtually around the space here</a>.
+            </p>
+
             <h3>Gallery Floor Plan</h3>
             <p>Refer to the map below to select your region preferences.</p>
             <img src="floorplan.png" alt="Gallery Floor Plan" class="floorplan-img">
