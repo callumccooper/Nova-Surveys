@@ -148,7 +148,7 @@
         <!-- Dynamic Detailed Section -->
         <div id="detailed_section">
             <label for="piece_count">Number of Pieces</label>
-            <input type="number" id="piece_count" name="Number of Pieces" min="1" max="12" value="1">
+            <input type="number" id="piece_count" name="Number of Pieces" min="1" max="8" value="1">
 
             <!-- Dynamic Piece Titles Container -->
             <div id="piece_titles_container">
@@ -202,7 +202,8 @@
     const togetherRegionsDiv = document.getElementById('together_regions');
     const apartRegionsDiv = document.getElementById('apart_regions');
 
-    const totalRegions = 12;
+    // Updated total regions to 8
+    const totalRegions = 8;
 
     // Toggle Detailed Section and Disable/Enable its inputs
     skipCheckbox.addEventListener('change', () => {
