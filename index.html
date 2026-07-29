@@ -66,8 +66,9 @@
             font-size: 1rem;
             width: 100%;
         }
-        input[type="submit"]:hover {
-            background-color: #333;
+        input[type="submit"]:disabled {
+            background-color: #888;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -76,12 +77,9 @@
 <div class="form-container">
     <h2>Nova Gallery Location & Plaque Form</h2>
     
-    <form action="https://api.web3forms.com/submit" method="POST" id="galleryForm">
+    <form id="galleryForm">
         <!-- Web3Forms Access Key -->
         <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
-        
-        <!-- Redirect to custom thank-you page -->
-        <input type="hidden" name="redirect" value="https://callumcooper.github.io/Nova-Surveys/thanks.html">
 
         <!-- Artist Details -->
         <label for="artist_name">Artist Name</label>
@@ -93,8 +91,6 @@
         <!-- Gallery Map -->
         <h3>Gallery Floor Plan</h3>
         <p>Refer to the map below to choose your top location preferences:</p>
-        
-        <!-- Update the src attribute if your image has a different name or file extension -->
         <img src="floorplan.png" alt="Gallery Floor Plan" class="floorplan-img">
 
         <!-- Location Selections -->
@@ -116,15 +112,17 @@
             <label><input type="checkbox" name="Preferred Locations" value="Spot 12" class="location-check"> Location 12</label>
         </div>
 
-        <input type="submit" value="Submit Preference">
+        <input type="submit" id="submitBtn" value="Submit Preference">
     </form>
 </div>
 
 <script>
     const checkboxes = document.querySelectorAll('.location-check');
     const requiredSelection = 3;
+    const form = document.getElementById('galleryForm');
+    const submitBtn = document.getElementById('submitBtn');
 
-    // Prevents selecting more than 3 boxes dynamically
+    // Limit selection to maximum 3 boxes
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             const checkedCount = document.querySelectorAll('.location-check:checked').length;
@@ -135,13 +133,40 @@
         });
     });
 
-    // Validates that EXACTLY 3 are selected on submit
-    document.getElementById('galleryForm').addEventListener('submit', function(e) {
+    // Send data via JavaScript fetch API and force redirect to thanks.html
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
         const checkedCount = document.querySelectorAll('.location-check:checked').length;
         if (checkedCount !== requiredSelection) {
-            e.preventDefault();
             alert('Please select exactly 3 locations before submitting.');
+            return;
         }
+
+        submitBtn.value = "Sending...";
+        submitBtn.disabled = true;
+
+        const formData = new FormData(form);
+
+        fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                // Immediate manual redirect to your custom thanks page
+                window.location.href = "https://callumcooper.github.io/Nova-Surveys/thanks.html";
+            } else {
+                alert('Submission failed. Please try again.');
+                submitBtn.value = "Submit Preference";
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            alert('Network error. Please check your internet connection.');
+            submitBtn.value = "Submit Preference";
+            submitBtn.disabled = false;
+        });
     });
 </script>
 
