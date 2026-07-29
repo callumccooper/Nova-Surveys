@@ -110,12 +110,12 @@
 </head>
 <body>
 
-    <h2>Nova Gallery — Location Form</h2>
+    <h2>Nova Gallery — Location & Plaque Form</h2>
     
     <form id="galleryForm">
         <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
 
-        <!-- Basic Info -->
+        <!-- Artist Name -->
         <label for="artist_name">Artist Name</label>
         <input type="text" id="artist_name" name="Artist Name" placeholder="Full name" required>
 
@@ -157,13 +157,8 @@
             <h3>Preferred Regions</h3>
             <p id="region_instructions">Select 1 region for all pieces.</p>
 
-            <div id="together_regions" class="regions-grid">
-                <!-- Generates single-choice list for Together arrangement -->
-            </div>
-
-            <div id="apart_regions" style="display: none;">
-                <!-- Generates region pickers per piece for Apart arrangement -->
-            </div>
+            <div id="together_regions" class="regions-grid"></div>
+            <div id="apart_regions" style="display: none;"></div>
         </div>
 
         <input type="submit" id="submitBtn" value="Submit Preference">
@@ -183,17 +178,22 @@
 
     const totalRegions = 12;
 
-    // Toggle Detailed Section when "You decide" is checked
+    // Toggle Detailed Section and Disable/Enable its inputs
     skipCheckbox.addEventListener('change', () => {
-        if (skipCheckbox.checked) {
-            detailedSection.style.display = 'none';
-        } else {
-            detailedSection.style.display = 'block';
-        }
+        const isSkipped = skipCheckbox.checked;
+        detailedSection.style.display = isSkipped ? 'none' : 'block';
+
+        // Enable or disable ALL inputs inside detailedSection
+        const detailedInputs = detailedSection.querySelectorAll('input, select');
+        detailedInputs.forEach(input => {
+            input.disabled = isSkipped;
+        });
     });
 
-    // Update form state dynamically
+    // Dynamically build and manage active inputs
     function updateFormFields() {
+        if (skipCheckbox.checked) return;
+
         const count = parseInt(pieceCountInput.value) || 1;
         const arrangement = document.querySelector('input[name="Arrangement"]:checked').value;
 
@@ -204,16 +204,19 @@
             div.className = 'piece-item';
             div.innerHTML = `
                 <label for="work_title_${i}">Piece ${i} Title</label>
-                <input type="text" id="work_title_${i}" name="Piece ${i} Title" placeholder="Title of piece ${i}" ${skipCheckbox.checked ? '' : 'required'}>
+                <input type="text" id="work_title_${i}" name="Piece ${i} Title" placeholder="Title of piece ${i}" required>
             `;
             titlesList.appendChild(div);
         }
 
         // 2. Render Region Selection Modes
         if (arrangement === 'Together') {
-            regionInstructions.textContent = 'Select 1 region for your pieces:';
+            regionInstructions.textContent = 'Select 1 region for all pieces:';
             togetherRegionsDiv.style.display = 'grid';
             apartRegionsDiv.style.display = 'none';
+
+            // Disable apart regions so they don't submit to Web3Forms
+            apartRegionsDiv.innerHTML = '';
 
             togetherRegionsDiv.innerHTML = '';
             for (let r = 1; r <= totalRegions; r++) {
@@ -226,6 +229,9 @@
             regionInstructions.textContent = `Assign a region for each of your ${count} piece(s):`;
             togetherRegionsDiv.style.display = 'none';
             apartRegionsDiv.style.display = 'block';
+
+            // Disable together regions so they don't submit to Web3Forms
+            togetherRegionsDiv.innerHTML = '';
 
             apartRegionsDiv.innerHTML = '';
             for (let i = 1; i <= count; i++) {
@@ -251,14 +257,14 @@
     pieceCountInput.addEventListener('input', updateFormFields);
     arrangementRadios.forEach(radio => radio.addEventListener('change', updateFormFields));
 
-    // Initialize fields on load
+    // Initialize fields
     updateFormFields();
 
-    // Submit Logic
+    // Form Submit Handler
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // Check region validation if not skipping
+        // Check required single region if not skipping
         if (!skipCheckbox.checked) {
             const arrangement = document.querySelector('input[name="Arrangement"]:checked').value;
             if (arrangement === 'Together') {
