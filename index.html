@@ -6,96 +6,101 @@
     <title>Nova Gallery - Artist Submission</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Courier New", Courier, monospace;
+            background-color: #0d0d0d;
+            color: #00ff66;
             max-width: 650px;
             margin: 30px auto;
             padding: 20px;
-            line-height: 1.6;
-            background-color: #f9f9f9;
-            color: #333;
-        }
-        .form-container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            line-height: 1.4;
         }
         h2, h3 {
-            margin-top: 0;
-            color: #222;
+            color: #00ff66;
+            margin-top: 20px;
+            border-bottom: 1px dashed #00ff66;
+            padding-bottom: 4px;
         }
         label {
-            font-weight: bold;
+            display: block;
+            margin-top: 15px;
         }
         input[type="text"] {
+            background-color: #000;
+            color: #00ff66;
+            border: 1px solid #00ff66;
+            font-family: inherit;
+            font-size: 1rem;
             width: 100%;
-            padding: 10px;
-            margin: 8px 0 20px 0;
+            padding: 6px;
+            margin-top: 4px;
             box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 5px #00ff66;
         }
         .checkbox-group {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-            background: #fafafa;
-            padding: 15px;
-            border: 1px solid #eee;
-            border-radius: 4px;
+            gap: 8px;
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #00ff66;
         }
         .checkbox-group label {
-            font-weight: normal;
+            margin-top: 0;
             cursor: pointer;
+        }
+        input[type="checkbox"] {
+            accent-color: #00ff66;
         }
         .floorplan-img {
             max-width: 100%;
             height: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 20px;
+            border: 1px solid #00ff66;
+            margin-top: 10px;
         }
         input[type="submit"] {
-            background-color: #000;
-            color: #fff;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            background-color: #00ff66;
+            color: #000;
+            font-family: inherit;
+            font-weight: bold;
             font-size: 1rem;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
             width: 100%;
         }
+        input[type="submit"]:hover {
+            background-color: #00cc52;
+        }
         input[type="submit"]:disabled {
-            background-color: #888;
+            background-color: #333333;
+            color: #666666;
             cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
-<div class="form-container">
-    <h2>Nova Gallery Location & Plaque Form</h2>
+    <h2>> Nova Gallery Location & Plaque Form</h2>
     
     <form id="galleryForm">
-        <!-- Web3Forms Access Key -->
         <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
 
-        <!-- Artist Details -->
-        <label for="artist_name">Artist Name</label>
-        <input type="text" id="artist_name" name="Artist Name" placeholder="Your full name" required>
+        <label for="artist_name">> Artist Name:</label>
+        <input type="text" id="artist_name" name="Artist Name" placeholder="Full name" required>
 
-        <label for="work_title">Work Title</label>
-        <input type="text" id="work_title" name="Work Title" placeholder="Title of your piece" required>
+        <label for="work_title">> Work Title:</label>
+        <input type="text" id="work_title" name="Work Title" placeholder="Title of piece" required>
 
-        <!-- Gallery Map -->
-        <h3>Gallery Floor Plan</h3>
-        <p>Refer to the map below to choose your top location preferences:</p>
+        <h3>> Gallery Floor Plan</h3>
+        <p>Refer to the map below to choose your top locations:</p>
         <img src="floorplan.png" alt="Gallery Floor Plan" class="floorplan-img">
 
-        <!-- Location Selections -->
-        <h3>Preferred Locations</h3>
-        <p><em>Select exactly 3 preferred spots from the floor plan:</em></p>
+        <h3>> Preferred Locations</h3>
+        <p>[Select exactly 3 spots from the floor plan]</p>
 
         <div class="checkbox-group">
             <label><input type="checkbox" name="Preferred Locations" value="Spot 1" class="location-check"> Location 1</label>
@@ -112,9 +117,8 @@
             <label><input type="checkbox" name="Preferred Locations" value="Spot 12" class="location-check"> Location 12</label>
         </div>
 
-        <input type="submit" id="submitBtn" value="Submit Preference">
+        <input type="submit" id="submitBtn" value="[ SUBMIT PREFERENCE ]">
     </form>
-</div>
 
 <script>
     const checkboxes = document.querySelectorAll('.location-check');
@@ -122,28 +126,26 @@
     const form = document.getElementById('galleryForm');
     const submitBtn = document.getElementById('submitBtn');
 
-    // Limit selection to maximum 3 boxes
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             const checkedCount = document.querySelectorAll('.location-check:checked').length;
             if (checkedCount > requiredSelection) {
                 checkbox.checked = false;
-                alert('You can only select up to 3 preferred locations.');
+                alert('ERROR: Maximum 3 locations allowed.');
             }
         });
     });
 
-    // Send data via JavaScript fetch API and force redirect to thanks.html
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
         const checkedCount = document.querySelectorAll('.location-check:checked').length;
         if (checkedCount !== requiredSelection) {
-            alert('Please select exactly 3 locations before submitting.');
+            alert('ERROR: Select exactly 3 locations before submitting.');
             return;
         }
 
-        submitBtn.value = "Sending...";
+        submitBtn.value = "[ SENDING DATA... ]";
         submitBtn.disabled = true;
 
         const formData = new FormData(form);
@@ -154,17 +156,16 @@
         })
         .then(response => {
             if (response.ok) {
-                // Immediate manual redirect to your custom thanks page
-                window.location.href = "thanks.html"
+                window.location.href = "thanks.html";
             } else {
-                alert('Submission failed. Please try again.');
-                submitBtn.value = "Submit Preference";
+                alert('ERROR: Submission failed.');
+                submitBtn.value = "[ SUBMIT PREFERENCE ]";
                 submitBtn.disabled = false;
             }
         })
         .catch(error => {
-            alert('Network error. Please check your internet connection.');
-            submitBtn.value = "Submit Preference";
+            alert('ERROR: Network issue.');
+            submitBtn.value = "[ SUBMIT PREFERENCE ]";
             submitBtn.disabled = false;
         });
     });
