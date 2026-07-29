@@ -33,7 +33,7 @@
             margin-top: 20px;
             margin-bottom: 5px;
         }
-        input[type="text"] {
+        input[type="text"], input[type="number"] {
             font-family: inherit;
             font-size: 14px;
             width: 100%;
@@ -49,20 +49,26 @@
             margin: 5px 0 15px 0;
             color: #555555;
         }
-        .checkbox-group {
+        .checkbox-group, .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .regions-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin: 20px 0;
         }
-        .checkbox-group label {
+        label.inline-label {
             margin: 0;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        input[type="checkbox"] {
+        input[type="checkbox"], input[type="radio"] {
             accent-color: #000000;
             cursor: pointer;
         }
@@ -92,6 +98,14 @@
             background-color: #cccccc;
             cursor: not-allowed;
         }
+        .piece-item {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ccc;
+        }
+        .piece-item:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
@@ -101,60 +115,159 @@
     <form id="galleryForm">
         <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
 
+        <!-- Basic Info -->
         <label for="artist_name">Artist Name</label>
         <input type="text" id="artist_name" name="Artist Name" placeholder="Full name" required>
 
-        <label for="work_title">Work Title</label>
-        <input type="text" id="work_title" name="Work Title" placeholder="Title of piece" required>
+        <!-- Quick Opt-out Choice -->
+        <div class="checkbox-group" style="margin-top: 25px;">
+            <label class="inline-label">
+                <input type="checkbox" id="skip_preference" name="Selection Preference" value="Decide for me">
+                This is too long, I don't care — you decide
+            </label>
+        </div>
 
-        <h3>Gallery Floor Plan</h3>
-        <p>Refer to the map below to choose your top location preferences.</p>
-        <img src="floorplan.png" alt="Gallery Floor Plan" class="floorplan-img">
+        <!-- Dynamic Detailed Section -->
+        <div id="detailed_section">
+            <label for="piece_count">Number of Pieces</label>
+            <input type="number" id="piece_count" name="Number of Pieces" min="1" max="12" value="1">
 
-        <h3>Preferred Locations</h3>
-        <p>Select exactly 3 spots from the floor plan.</p>
+            <!-- Dynamic Piece Titles Container -->
+            <div id="piece_titles_container">
+                <h3>Work Titles</h3>
+                <div id="titles_list"></div>
+            </div>
 
-        <div class="checkbox-group">
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 1" class="location-check"> Location 1</label>
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 2" class="location-check"> Location 2</label>
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 3" class="location-check"> Location 3</label>
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 4" class="location-check"> Location 4</label>
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 5" class="location-check"> Location 5</label>
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 6" class="location-check"> Location 6</label>
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 7" class="location-check"> Location 7</label>
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 8" class="location-check"> Location 8</label>
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 9" class="location-check"> Location 9</label>
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 10" class="location-check"> Location 10</label>
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 11" class="location-check"> Location 11</label>
-            <label><input type="checkbox" name="Preferred Locations" value="Spot 12" class="location-check"> Location 12</label>
+            <!-- Layout Arrangement Option -->
+            <h3>Arrangement Preference</h3>
+            <div class="radio-group">
+                <label class="inline-label">
+                    <input type="radio" name="Arrangement" value="Together" checked> Together in one area
+                </label>
+                <label class="inline-label">
+                    <input type="radio" name="Arrangement" value="Apart"> Spread apart across regions
+                </label>
+            </div>
+
+            <!-- Floor Plan & Regions -->
+            <h3>Gallery Floor Plan</h3>
+            <p>Refer to the map below to select your region preferences.</p>
+            <img src="floorplan.png" alt="Gallery Floor Plan" class="floorplan-img">
+
+            <h3>Preferred Regions</h3>
+            <p id="region_instructions">Select 1 region for all pieces.</p>
+
+            <div id="together_regions" class="regions-grid">
+                <!-- Generates single-choice list for Together arrangement -->
+            </div>
+
+            <div id="apart_regions" style="display: none;">
+                <!-- Generates region pickers per piece for Apart arrangement -->
+            </div>
         </div>
 
         <input type="submit" id="submitBtn" value="Submit Preference">
     </form>
 
 <script>
-    const checkboxes = document.querySelectorAll('.location-check');
-    const requiredSelection = 3;
     const form = document.getElementById('galleryForm');
     const submitBtn = document.getElementById('submitBtn');
+    const skipCheckbox = document.getElementById('skip_preference');
+    const detailedSection = document.getElementById('detailed_section');
+    const pieceCountInput = document.getElementById('piece_count');
+    const titlesList = document.getElementById('titles_list');
+    const arrangementRadios = document.querySelectorAll('input[name="Arrangement"]');
+    const regionInstructions = document.getElementById('region_instructions');
+    const togetherRegionsDiv = document.getElementById('together_regions');
+    const apartRegionsDiv = document.getElementById('apart_regions');
 
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            const checkedCount = document.querySelectorAll('.location-check:checked').length;
-            if (checkedCount > requiredSelection) {
-                checkbox.checked = false;
-                alert('You can only select up to 3 locations.');
-            }
-        });
+    const totalRegions = 12;
+
+    // Toggle Detailed Section when "You decide" is checked
+    skipCheckbox.addEventListener('change', () => {
+        if (skipCheckbox.checked) {
+            detailedSection.style.display = 'none';
+        } else {
+            detailedSection.style.display = 'block';
+        }
     });
 
+    // Update form state dynamically
+    function updateFormFields() {
+        const count = parseInt(pieceCountInput.value) || 1;
+        const arrangement = document.querySelector('input[name="Arrangement"]:checked').value;
+
+        // 1. Render Dynamic Titles
+        titlesList.innerHTML = '';
+        for (let i = 1; i <= count; i++) {
+            const div = document.createElement('div');
+            div.className = 'piece-item';
+            div.innerHTML = `
+                <label for="work_title_${i}">Piece ${i} Title</label>
+                <input type="text" id="work_title_${i}" name="Piece ${i} Title" placeholder="Title of piece ${i}" ${skipCheckbox.checked ? '' : 'required'}>
+            `;
+            titlesList.appendChild(div);
+        }
+
+        // 2. Render Region Selection Modes
+        if (arrangement === 'Together') {
+            regionInstructions.textContent = 'Select 1 region for your pieces:';
+            togetherRegionsDiv.style.display = 'grid';
+            apartRegionsDiv.style.display = 'none';
+
+            togetherRegionsDiv.innerHTML = '';
+            for (let r = 1; r <= totalRegions; r++) {
+                const label = document.createElement('label');
+                label.className = 'inline-label';
+                label.innerHTML = `<input type="radio" name="Together Region" value="Region ${r}"> Region ${r}`;
+                togetherRegionsDiv.appendChild(label);
+            }
+        } else {
+            regionInstructions.textContent = `Assign a region for each of your ${count} piece(s):`;
+            togetherRegionsDiv.style.display = 'none';
+            apartRegionsDiv.style.display = 'block';
+
+            apartRegionsDiv.innerHTML = '';
+            for (let i = 1; i <= count; i++) {
+                const pieceBlock = document.createElement('div');
+                pieceBlock.className = 'piece-item';
+                
+                let optionsHtml = '';
+                for (let r = 1; r <= totalRegions; r++) {
+                    optionsHtml += `<option value="Region ${r}">Region ${r}</option>`;
+                }
+
+                pieceBlock.innerHTML = `
+                    <label for="piece_region_${i}">Region for Piece ${i}</label>
+                    <select id="piece_region_${i}" name="Piece ${i} Region" style="width: 100%; padding: 8px 0; border: none; border-bottom: 1px solid #000; background: transparent; font-family: inherit;">
+                        ${optionsHtml}
+                    </select>
+                `;
+                apartRegionsDiv.appendChild(pieceBlock);
+            }
+        }
+    }
+
+    pieceCountInput.addEventListener('input', updateFormFields);
+    arrangementRadios.forEach(radio => radio.addEventListener('change', updateFormFields));
+
+    // Initialize fields on load
+    updateFormFields();
+
+    // Submit Logic
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        const checkedCount = document.querySelectorAll('.location-check:checked').length;
-        if (checkedCount !== requiredSelection) {
-            alert('Please select exactly 3 locations before submitting.');
-            return;
+
+        // Check region validation if not skipping
+        if (!skipCheckbox.checked) {
+            const arrangement = document.querySelector('input[name="Arrangement"]:checked').value;
+            if (arrangement === 'Together') {
+                const selectedTogether = document.querySelector('input[name="Together Region"]:checked');
+                if (!selectedTogether) {
+                    alert('Please select 1 preferred region.');
+                    return;
+                }
+            }
         }
 
         submitBtn.value = "Sending...";
