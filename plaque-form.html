@@ -99,16 +99,7 @@
             flex-wrap: wrap;
             align-items: baseline;
             font-size: 13px;
-            margin-top: 10px;
-        }
-
-        .meta-line-combined {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 12px;
-            font-size: 13px;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         select {
@@ -130,7 +121,7 @@
             right: 24px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .auto-color-label {
@@ -141,6 +132,21 @@
             line-height: 1.2;
             cursor: pointer;
             user-select: none;
+        }
+
+        .circle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .circle-prompt {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666666;
+            white-space: nowrap;
         }
 
         .circle-tag {
@@ -243,7 +249,7 @@
             </div>
 
             <!-- Bottom Section: Technical Details & Meta -->
-            <div style="padding-right: 180px;"> <!-- Margin ensures text doesn't overlap tag controls -->
+            <div style="padding-right: 180px;"> <!-- Prevents text from colliding with circle area -->
                 
                 <!-- Audio Field -->
                 <div class="meta-line">
@@ -251,10 +257,14 @@
                     <input type="text" name="Audio Track" class="auto-size" placeholder="Song / Audio Track (optional)" style="flex-grow: 1;">
                 </div>
 
-                <!-- Material AND Dimension (Joined) -->
-                <div class="meta-line-combined">
-                    <input type="text" name="Medium & Materials" class="auto-size" placeholder="Medium (e.g., Oil on canvas)" style="flex: 1; min-width: 140px;" required>
-                    <input type="text" name="Dimensions" class="auto-size" placeholder="Dimensions (e.g., 61.5 x 61 cm)" style="flex: 1; min-width: 120px;" required>
+                <!-- Medium & Materials -->
+                <div class="meta-line">
+                    <input type="text" name="Medium & Materials" class="auto-size" placeholder="Medium (e.g., Oil on canvas)" style="width: 100%;" required>
+                </div>
+
+                <!-- Dimensions (Now directly on line below Medium) -->
+                <div class="meta-line">
+                    <input type="text" name="Dimensions" class="auto-size" placeholder="Dimensions (e.g., 61.5 x 61 cm)" style="width: 100%;" required>
                 </div>
 
                 <!-- Date/Year Field -->
@@ -265,7 +275,7 @@
                 </div>
 
                 <!-- For Sale Option -->
-                <div class="meta-line" style="margin-top: 10px;">
+                <div class="meta-line" style="margin-top: 8px;">
                     <select name="For Sale" required>
                         <option value="" disabled selected>For sale?</option>
                         <option value="Available for sale">Available for sale</option>
@@ -281,9 +291,12 @@
                 </label>
                 <input type="checkbox" id="autoColorCheck" name="Auto Select Dominant Color" value="Yes" style="cursor: pointer;">
                 
-                <div class="circle-tag" id="colorCircle" title="Click to pick tag color">
-                    TAP<br>HERE
-                    <input type="color" id="tagColor" name="Tag Chosen Color" value="#ffffff">
+                <div class="circle-container">
+                    <span class="circle-prompt" id="circlePrompt">Pick colour</span>
+                    <div class="circle-tag" id="colorCircle" title="Click to pick tag color">
+                        TAP<br>HERE
+                        <input type="color" id="tagColor" name="Tag Chosen Color" value="#ffffff">
+                    </div>
                 </div>
             </div>
 
@@ -302,6 +315,7 @@
     const tagColorInput = document.getElementById('tagColor');
     const colorCircle = document.getElementById('colorCircle');
     const autoColorCheck = document.getElementById('autoColorCheck');
+    const circlePrompt = document.getElementById('circlePrompt');
 
     const MAX_WORDS = 100;
 
@@ -329,11 +343,12 @@
             colorCircle.style.backgroundColor = 'transparent';
             colorCircle.style.color = '#000000';
             colorCircle.style.borderColor = '#000000';
+            circlePrompt.style.opacity = '0.4';
             tagColorInput.disabled = true;
         } else {
             colorCircle.classList.remove('disabled');
+            circlePrompt.style.opacity = '1';
             tagColorInput.disabled = false;
-            // Trigger input change to re-apply color if un-checked
             tagColorInput.dispatchEvent(new Event('input'));
         }
     });
