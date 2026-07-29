@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Gallery - Plaque Submission</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        h2 {
+            font-size: 16px;
+            font-weight: normal;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        /* Plaque Preview Square */
+        .plaque-box {
+            border: 1px solid #000000;
+            aspect-ratio: 1 / 1;
+            padding: 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: #ffffff;
+        }
+        .plaque-header {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        .plaque-header input {
+            font-weight: bold;
+        }
+        input[type="text"], textarea, select {
+            font-family: inherit;
+            font-size: 13px;
+            width: 100%;
+            border: none;
+            background: transparent;
+            outline: none;
+            padding: 2px 0;
+            color: #000000;
+            box-sizing: border-box;
+        }
+        input[type="text"]::placeholder, textarea::placeholder {
+            color: #888888;
+        }
+        textarea {
+            resize: none;
+            height: 120px;
+            line-height: 1.4;
+        }
+        .meta-line {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+        .meta-line label {
+            white-space: nowrap;
+        }
+        select {
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        input[type="submit"] {
+            font-family: inherit;
+            font-size: 14px;
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 0;
+            -webkit-appearance: none;
+        }
+        input[type="submit"]:hover {
+            background-color: #333333;
+        }
+        input[type="submit"]:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Plaque Details Submission</h2>
+    
+    <form id="plaqueForm">
+        <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
+
+        <!-- Square Plaque Layout Container -->
+        <div class="plaque-box">
+            
+            <!-- Top Section: Piece Title & Artist Name -->
+            <div>
+                <div class="plaque-header">
+                    <input type="text" name="Piece Title" placeholder="Piece Title" required>
+                    <span>,</span>
+                    <input type="text" name="Artist Name" placeholder="Artist Name" required>
+                </div>
+
+                <!-- Description Paragraph -->
+                <textarea name="Description" placeholder="Description / Artist statement..." required></textarea>
+            </div>
+
+            <!-- Bottom Section: Technical Details & Meta -->
+            <div>
+                <div class="meta-line">
+                    <label>Audio:</label>
+                    <input type="text" name="Audio Track" placeholder="Song / Audio Track (optional)">
+                </div>
+
+                <div class="meta-line">
+                    <input type="text" name="Medium & Materials" placeholder="Medium (e.g., Oil on canvas)" required>
+                </div>
+
+                <div class="meta-line">
+                    <input type="text" name="Dimensions" placeholder="Dimensions (e.g., 61.5 x 61 cm)" required>
+                </div>
+
+                <div class="meta-line">
+                    <label>(</label>
+                    <input type="text" name="Year" placeholder="2026" style="width: 50px;" required>
+                    <label>)</label>
+                </div>
+
+                <div class="meta-line" style="margin-top: 8px;">
+                    <select name="For Sale" required>
+                        <option value="" disabled selected>For sale?</option>
+                        <option value="Available for sale">Available for sale</option>
+                        <option value="NFS (Not for sale)">NFS (Not for sale)</option>
+                        <option value="POR (Price on request)">POR (Price on request)</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <input type="submit" id="submitBtn" value="Submit Plaque Info">
+    </form>
+
+<script>
+    const form = document.getElementById('plaqueForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        submitBtn.value = "Sending...";
+        submitBtn.disabled = true;
+
+        const formData = new FormData(form);
+
+        fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = "thanks.html";
+            } else {
+                alert('Submission failed. Please try again.');
+                submitBtn.value = "Submit Plaque Info";
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            alert('Network error. Please try again.');
+            submitBtn.value = "Submit Plaque Info";
+            submitBtn.disabled = false;
+        });
+    });
+</script>
+
+</body>
+</html>
