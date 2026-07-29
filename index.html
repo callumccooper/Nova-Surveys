@@ -1,22 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Gallery Submission Test</title>
+    <title>Gallery Location & Plaque Submission</title>
 </head>
 <body>
 
-<form action="https://api.web3forms.com/submit" method="POST">
-    <!-- Required Access Key -->
+<form action="https://api.web3forms.com/submit" method="POST" id="galleryForm">
+    <!-- Required Web3Forms Access Key -->
     <input type="hidden" name="access_key" value="ba406d16-9b73-4b6c-aaf7-e1ead6a55b0f">
 
+    <!-- Artist Info -->
     <label for="artist_name">Name:</label><br>
     <input type="text" id="artist_name" name="Artist Name" required><br><br>
 
     <label for="work_title">Work Title:</label><br>
     <input type="text" id="work_title" name="Work Title" required><br><br>
 
-    <input type="submit" value="Send">
+    <!-- Gallery Floor Plan Display -->
+    <h3>Gallery Floor Plan</h3>
+    <p>Please review the numbered locations on the map below:</p>
+    <!-- Replace 'floorplan.png' with your actual image filename or URL -->
+    <img src="floorplan.png" alt="Gallery Floor Plan" style="max-width: 100%; height: auto; border: 1px solid #000;">
+    <br><br>
+
+    <!-- Location Selections (Exactly 3 required) -->
+    <h3>Preferred Locations (Select exactly 3 in order of preference)</h3>
+    
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 1" class="location-check"> Location 1</label><br>
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 2" class="location-check"> Location 2</label><br>
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 3" class="location-check"> Location 3</label><br>
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 4" class="location-check"> Location 4</label><br>
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 5" class="location-check"> Location 5</label><br>
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 6" class="location-check"> Location 6</label><br>
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 7" class="location-check"> Location 7</label><br>
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 8" class="location-check"> Location 8</label><br>
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 9" class="location-check"> Location 9</label><br>
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 10" class="location-check"> Location 10</label><br>
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 11" class="location-check"> Location 11</label><br>
+    <label><input type="checkbox" name="Preferred Locations" value="Spot 12" class="location-check"> Location 12</label><br><br>
+
+    <input type="submit" value="Send Submission">
 </form>
+
+<script>
+    const checkboxes = document.querySelectorAll('.location-check');
+    const maxAllowed = 3;
+
+    // 1. Enforce maximum of 3 checkmarks on click
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const checkedCount = document.querySelectorAll('.location-check:checked').length;
+            if (checkedCount > maxAllowed) {
+                checkbox.checked = false;
+                alert('You can only select up to 3 preferred locations.');
+            }
+        });
+    });
+
+    // 2. Ensure they selected EXACTLY 3 before submitting
+    document.getElementById('galleryForm').addEventListener('submit', function(e) {
+        const checkedCount = document.querySelectorAll('.location-check:checked').length;
+        if (checkedCount < maxAllowed) {
+            e.preventDefault();
+            alert('Please select exactly 3 locations before submitting.');
+        }
+    });
+</script>
 
 </body>
 </html>
