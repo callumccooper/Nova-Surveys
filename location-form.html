@@ -205,7 +205,8 @@
     const togetherRegionsDiv = document.getElementById('together_regions');
     const apartRegionsDiv = document.getElementById('apart_regions');
 
-    const totalRegions = 8;
+    // Updated total regions from 8 to 5
+    const totalRegions = 5;
 
     // Toggle Detailed Section and Disable/Enable its inputs
     skipCheckbox.addEventListener('change', () => {
@@ -260,15 +261,13 @@
 
             apartRegionsDiv.innerHTML = '';
 
-            // Only rebuild together radios if empty
-            if (togetherRegionsDiv.children.length === 0) {
-                togetherRegionsDiv.innerHTML = '';
-                for (let r = 1; r <= totalRegions; r++) {
-                    const label = document.createElement('label');
-                    label.className = 'inline-label';
-                    label.innerHTML = `<input type="radio" name="Together Region" value="Region ${r}"> Region ${r}`;
-                    togetherRegionsDiv.appendChild(label);
-                }
+            // Rebuild region options (1 through 5)
+            togetherRegionsDiv.innerHTML = '';
+            for (let r = 1; r <= totalRegions; r++) {
+                const label = document.createElement('label');
+                label.className = 'inline-label';
+                label.innerHTML = `<input type="radio" name="Together Region" value="Region ${r}"> Region ${r}`;
+                togetherRegionsDiv.appendChild(label);
             }
         } else {
             regionInstructions.textContent = `Assign a region for each of your ${count} piece(s):`;
@@ -330,15 +329,17 @@
 
         const formData = new FormData(form);
 
+        // Standard Web3Forms API Endpoint
         fetch('https://api.web3forms.com/submit', {
             method: 'POST',
             body: formData
         })
-        .then(response => {
-            if (response.ok) {
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
                 window.location.href = "thanks.html";
             } else {
-                alert('Submission failed. Please try again.');
+                alert(`Submission failed: ${data.message || 'Please try again.'}`);
                 submitBtn.value = "Submit Preference";
                 submitBtn.disabled = false;
             }
